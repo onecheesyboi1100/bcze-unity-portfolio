@@ -590,15 +590,21 @@
 
     function openModal(title, meta) {
       modalTitle.textContent = title;
-      modalMeta.textContent = meta;
+      
+      // Split the meta into "Date/Info" and "Description"
+      let cleanMeta = meta;
+      let descText = 'No description provided.';
+      
+      if (meta.includes('| Description: ')) {
+          const parts = meta.split('| Description: ');
+          cleanMeta = parts[0].trim(); // Only keeps the date and info before the pipe
+          descText = parts[1].trim();  // Keeps the description after the pipe
+      }
+
+      modalMeta.textContent = cleanMeta; // Shows only the date
       
       currentSet = showcaseData[title] || [{ type: 'placeholder', label: 'Add media to the showcaseData object in the script.' }];
       currentIndex = 0;
-
-      let descText = 'No description provided.';
-      if (meta.includes('Description: ')) {
-          descText = meta.split('Description: ')[1];
-      }
 
       modalMedia.innerHTML = `
         <div class="carousel">
