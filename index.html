@@ -48,22 +48,32 @@
     }
     .top small { font-size: 10px; color: #7890aa; }
     
-    /* Page Sections */
+    /* Page Overlay System */
+    main.wrap {
+      position: relative; 
+    }
     .page {
       display: none;
-      min-height: calc(100vh - 130px);
-      padding: 50px 0 90px;
     }
     .page.active {
       display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 50px 0 90px;
       animation: fade .3s ease;
+      background: radial-gradient(ellipse at 50% -20%, #163b5c 0, transparent 55%), var(--bg);
     }
-    .hero {
-      min-height: calc(100vh - 76px);
+    /* The hero must push the container down on initial load */
+    .page.active.hero {
+      position: relative;
+      min-height: calc(100vh - 130px);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      position: relative;
+      background: transparent;
+      padding: 0;
     }
     .eyebrow { font-size: 11px; color: var(--cyan); }
     
@@ -102,7 +112,7 @@
     }
     .btn:hover { transform: translateY(-3px); border-color: var(--cyan); box-shadow: 0 8px 28px #1a8cc522; }
     .btn.primary { background: linear-gradient(110deg, #117db5, #315ed1); border-color: transparent; }
-    .back { border: 0; background: none; color: #93abc4; padding: 8px 0 30px; cursor: pointer; font-size: 11px; }
+    .back { border: 0; background: none; color: #93abc4; padding: 8px 0 30px; cursor: pointer; font-size: 11px; text-align: left; display: inline-block; }
     .back:hover { color: var(--cyan); }
     
     /* Accordion & Tiles */
@@ -144,10 +154,18 @@
       text-align: left;
       color: white;
       transition: .2s;
+      background-size: cover;
+      background-position: center;
     }
     .tile:hover { border-color: var(--cyan); transform: translateY(-3px); }
-    .tile:before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 35%, #050a12eF); }
+    .tile:before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 35%, #050a12eF); z-index: 1; }
     
+    /* Only hide placeholder text if an image actually loads */
+    .tile.has-image .symbol,
+    .tile.has-image .hint {
+      display: none;
+    }
+
     .symbol {
       position: absolute;
       inset: 0;
@@ -157,8 +175,9 @@
       font-weight: 800;
       letter-spacing: -.08em;
       color: #8bdfff55;
+      z-index: 1;
     }
-    .hint { position: absolute; top: 13px; left: 13px; color: #7e9ab5; font: 9px 'DM Mono'; letter-spacing: .1em; text-transform: uppercase; }
+    .hint { position: absolute; top: 13px; left: 13px; color: #7e9ab5; font: 9px 'DM Mono'; letter-spacing: .1em; text-transform: uppercase; z-index: 1; }
     
     .info {
       position: absolute;
@@ -168,6 +187,7 @@
       opacity: 0;
       transform: translateY(6px);
       transition: .2s;
+      z-index: 2;
     }
     .tile:hover .info, .tile:focus-visible .info { opacity: 1; transform: none; }
     .info b { display: block; font-size: 13px; }
@@ -198,29 +218,36 @@
       padding: 20px;
     }
     .modal.show { display: flex; }
-    .modalbox { width: min(900px, 100%); background: #0c1725; border: 1px solid #35516d; border-radius: 9px; overflow: hidden; }
+    .modalbox { width: min(900px, 100%); background: #0c1725; border: 1px solid #35516d; border-radius: 9px; overflow: hidden; display: flex; flex-direction: column; }
     .modalhead, .modalfoot { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
     .modalhead button { background: none; border: 0; color: white; font-size: 24px; cursor: pointer; }
     .modalfoot { border: 0; color: #91a5bc; font: 10px 'DM Mono'; }
     
     /* Carousel */
     .media {
-      aspect-ratio: 16/9;
-      display: grid;
-      place-items: center;
+      height: 60vh;
+      max-height: 500px; 
+      display: flex;
+      flex-direction: column;
       text-align: center;
       color: #89a5c1;
-      background: linear-gradient(135deg, #142c46, #080e18);
-      padding: 0;
+      background: #050a12;
       position: relative;
       overflow: hidden;
     }
-    .media img, .media video { width: 100%; height: 100%; object-fit: contain; border: 0; }
     
     .carousel { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0; padding: 0; }
-    .carousel-stage { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding: 20px; }
-    .carousel-slide { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; opacity: 1; transition: opacity .25s ease; }
+    .carousel-stage { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding: 0; overflow: hidden; }
+    .carousel-slide { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 1; transition: opacity .25s ease; }
     .carousel-slide.fading { opacity: 0; }
+    
+    /* Cover fills the area neatly without distortion */
+    .carousel-slide img, .carousel-slide video { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      border: 0; 
+    }
     
     .carousel-arrow {
       position: absolute;
@@ -269,6 +296,7 @@
       font-size: 13px;
       line-height: 1.7;
       border-radius: 0 0 6px 6px;
+      flex-shrink: 0;
     }
     .carousel-desc .desc-label { font: 10px 'DM Mono', monospace; color: #59dcff; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
     .carousel-desc .desc-text { min-height: 28px; color: #8ba6c1; font-style: italic; }
@@ -280,6 +308,7 @@
     
     /* Mobile & Accessibility */
     @media(max-width: 700px) {
+      .media { height: 50vh; }
       .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
       .info { opacity: 1; transform: none; bottom: 9px; left: 10px; }
       .info b { font-size: 11px; }
@@ -301,7 +330,7 @@
   </header>
 
   <!-- MAIN CONTENT -->
-  <main class="wrap">
+  <main class="wrap" id="mainContent">
     
     <!-- HOME PAGE -->
     <section id="home" class="page hero active">
@@ -324,8 +353,8 @@
       
       <div class="accordion">
         <!-- Category 1 -->
-        <div class="group open">
-          <button class="toggle" aria-expanded="true">Programming <span>＋</span></button>
+        <div class="group">
+          <button class="toggle" aria-expanded="false">Programming <span>＋</span></button>
           <div class="content"><div class="inner"><div class="tiles">
             <button class="tile" data-title="Gameplay Systems" data-meta="Creation date: Add date">
               <span class="hint">Showcase</span><span class="symbol">C#</span>
@@ -382,8 +411,8 @@
       <p class="sub">Games and collaborative projects developed in Unity.</p>
       
       <div class="accordion">
-        <div class="group open">
-          <button class="toggle" aria-expanded="true">In Active Development <span>＋</span></button>
+        <div class="group">
+          <button class="toggle" aria-expanded="false">In Active Development <span>＋</span></button>
           <div class="content"><div class="inner"><div class="tiles">
             <button class="tile" data-title="Official 2026 Unity Game Jam" data-meta="Date joined: Nov 5th, 2026 · Role: C# Programmer, 3D Artist">
               <span class="hint">Project</span><span class="symbol">OUGJ</span>
@@ -439,35 +468,51 @@
   <!-- JAVASCRIPT -->
   <script>
     // ==========================================
-    // 1. DATA CONFIGURATION (EASILY ADD MEDIA HERE)
+    // 1. DATA CONFIGURATION
     // ==========================================
-    // To add new images/videos, simply match the exact Title from the HTML tile above.
-    // Add as many objects { type: 'image', src: 'path/to/file.jpg' } to the array as you want.
-
     const showcaseData = {
       'Golgomight’s Engine': [
         { type: 'image', src: "Media/Portfolio/3D Art/Golgomight's Engine/golgomight_engine1.png" },
         { type: 'image', src: "Media/Portfolio/3D Art/Golgomight's Engine/golgomight_engine2.png" },
         { type: 'image', src: "Media/Portfolio/3D Art/Golgomight's Engine/golgomight_engine3.png" },
         { type: 'image', src: "Media/Portfolio/3D Art/Golgomight's Engine/golgomight_engine4.png" }
-      ],
-      
-      // Example of a video:
-      // 'Trust No One': [
-      //   { type: 'video', src: 'media/gameplay.mp4' },
-      //   { type: 'image', src: 'media/screenshot1.jpg' }
-      // ]
+      ]
     };
 
     // ==========================================
-    // 2. PAGE NAVIGATION & ACCORDION
+    // 2. PAGE NAVIGATION & OVERLAY HEIGHT
     // ==========================================
-    function go(id) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    const mainContainer = document.getElementById('mainContent');
+    const homePage = document.getElementById('home');
+
+    // Ensure the container reserves the height of the homepage so the footer doesn't jump up
+    function updateBaseHeight() {
+      if (homePage.classList.contains('active')) {
+        mainContainer.style.height = 'auto';
+      } else {
+        // Keep the base height at least as tall as the viewport minus header/footer
+        mainContainer.style.minHeight = 'calc(100vh - 130px)';
+      }
     }
 
+    function go(id) {
+      // Remove active state from all pages
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      
+      // Add active state to target page
+      document.getElementById(id).classList.add('active');
+      
+      // Update scroll position and container height
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      updateBaseHeight();
+    }
+
+    // Initialize height on load
+    updateBaseHeight();
+
+    // ==========================================
+    // 3. ACCORDION LOGIC
+    // ==========================================
     document.querySelectorAll('.toggle').forEach(btn => {
       btn.addEventListener('click', () => {
         let group = btn.closest('.group');
@@ -478,7 +523,37 @@
     });
 
     // ==========================================
-    // 3. CAROUSEL & MODAL LOGIC
+    // 4. TILE BACKGROUND IMAGES
+    // ==========================================
+    document.querySelectorAll('.tile').forEach(tile => {
+      const title = tile.dataset.title;
+      const mediaList = showcaseData[title];
+      
+      if (mediaList && mediaList.length > 0) {
+        const firstMedia = mediaList[0];
+        if (firstMedia.type === 'image') {
+          let img = new Image();
+          img.src = firstMedia.src;
+          img.onload = () => {
+            tile.style.backgroundImage = `url('${firstMedia.src}')`;
+            tile.classList.add('has-image');
+          };
+        } else if (firstMedia.type === 'video') {
+          tile.classList.add('has-image');
+          const videoBg = document.createElement('video');
+          videoBg.src = firstMedia.src;
+          videoBg.muted = true;
+          videoBg.loop = true;
+          videoBg.autoplay = true;
+          videoBg.playsInline = true;
+          videoBg.style.cssText = "position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;";
+          tile.appendChild(videoBg);
+        }
+      }
+    });
+
+    // ==========================================
+    // 5. CAROUSEL & MODAL LOGIC
     // ==========================================
     const modal = document.getElementById('modal');
     const modalMedia = document.getElementById('media');
@@ -488,22 +563,18 @@
     let currentIndex = 0;
     let currentSet = [];
 
-    // Opens the modal and builds the HTML structure
     function openModal(title, meta) {
       modalTitle.textContent = title;
       modalMeta.textContent = meta;
       
-      // Look up the media for this title, or fallback to placeholder
       currentSet = showcaseData[title] || [{ type: 'placeholder', label: 'Add media to the showcaseData object in the script.' }];
       currentIndex = 0;
 
-      // Extract description if the data-meta attribute contains "Description: "
       let descText = 'No description provided.';
       if (meta.includes('Description: ')) {
           descText = meta.split('Description: ')[1];
       }
 
-      // Build carousel UI
       modalMedia.innerHTML = `
         <div class="carousel">
           <div class="carousel-stage"></div>
@@ -517,14 +588,11 @@
         </div>
       `;
 
-      // Attach arrow events
       modalMedia.querySelector('.carousel-arrow.prev').addEventListener('click', () => changeSlide(-1));
       modalMedia.querySelector('.carousel-arrow.next').addEventListener('click', () => changeSlide(1));
 
-      // Render first slide
       renderSlide(false);
       
-      // Show modal
       modal.classList.add('show');
       document.body.style.overflow = 'hidden';
     }
@@ -534,13 +602,11 @@
       document.body.style.overflow = '';
     }
 
-    // Handles changing the index and triggering the fade animation
     function changeSlide(direction) {
       currentIndex = (currentIndex + direction + currentSet.length) % currentSet.length;
       renderSlide(true);
     }
 
-    // Injects the actual image/video into the stage
     function renderSlide(animate) {
       const stage = modalMedia.querySelector('.carousel-stage');
       const counter = modalMedia.querySelector('.carousel-counter');
@@ -548,12 +614,10 @@
       const nextBtn = modalMedia.querySelector('.carousel-arrow.next');
       const mediaItem = currentSet[currentIndex];
 
-      // Update counter & disable arrows if there's only 1 item
       counter.textContent = `${currentIndex + 1} / ${currentSet.length}`;
       prevBtn.disabled = currentSet.length <= 1;
       nextBtn.disabled = currentSet.length <= 1;
 
-      // Function to actually swap the HTML
       const apply = () => {
         let content = '';
         if (mediaItem.type === 'image') {
@@ -566,19 +630,17 @@
 
         stage.innerHTML = `<div class="carousel-slide">${content}</div>`;
         
-        // Trigger fade-in
         requestAnimationFrame(() => {
           const slideEl = stage.querySelector('.carousel-slide');
           if (slideEl) slideEl.classList.remove('fading');
         });
       };
 
-      // Trigger fade-out, then apply new content
       if (animate) {
         const slideEl = stage.querySelector('.carousel-slide');
         if (slideEl) {
           slideEl.classList.add('fading');
-          setTimeout(apply, 200); // Wait 200ms for fade-out to finish
+          setTimeout(apply, 200);
         } else {
           apply();
         }
@@ -588,16 +650,14 @@
     }
 
     // ==========================================
-    // 4. EVENT LISTENERS
+    // 6. EVENT LISTENERS
     // ==========================================
-    // Attach click events to all tiles
     document.querySelectorAll('.tile').forEach(tile => {
       tile.addEventListener('click', () => {
         openModal(tile.dataset.title, tile.dataset.meta);
       });
     });
 
-    // Close modal when clicking outside or pressing Escape
     modal.addEventListener('click', (e) => {
       if (e.target === modal) closeModal();
     });
@@ -606,7 +666,6 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    // Set current year in footer
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
