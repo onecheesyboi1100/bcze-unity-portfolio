@@ -158,9 +158,17 @@
       background-position: center;
     }
     .tile:hover { border-color: var(--cyan); transform: translateY(-3px); }
-    .tile:before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 35%, #050a12eF); z-index: 1; }
     
-    /* Only hide placeholder text if an image actually loads */
+    /* FIX: Ensure the gradient shade sits behind the text but above the image */
+    .tile:before { 
+      content: ""; 
+      position: absolute; 
+      inset: 0; 
+      background: linear-gradient(transparent 35%, #050a12eF); 
+      z-index: 1; 
+    }
+    
+    /* FIX: Hide placeholder text/symbol only when image is loaded */
     .tile.has-image .symbol,
     .tile.has-image .hint {
       display: none;
@@ -175,9 +183,18 @@
       font-weight: 800;
       letter-spacing: -.08em;
       color: #8bdfff55;
-      z-index: 1;
+      z-index: 2; /* Increased to sit above the image */
     }
-    .hint { position: absolute; top: 13px; left: 13px; color: #7e9ab5; font: 9px 'DM Mono'; letter-spacing: .1em; text-transform: uppercase; z-index: 1; }
+    .hint { 
+      position: absolute; 
+      top: 13px; 
+      left: 13px; 
+      color: #7e9ab5; 
+      font: 9px 'DM Mono'; 
+      letter-spacing: .1em; 
+      text-transform: uppercase; 
+      z-index: 2; /* Increased to sit above the image */
+    }
     
     .info {
       position: absolute;
@@ -187,7 +204,7 @@
       opacity: 0;
       transform: translateY(6px);
       transition: .2s;
-      z-index: 2;
+      z-index: 3; /* Above the gradient shade */
     }
     .tile:hover .info, .tile:focus-visible .info { opacity: 1; transform: none; }
     .info b { display: block; font-size: 13px; }
@@ -535,7 +552,8 @@
           let img = new Image();
           img.src = firstMedia.src;
           img.onload = () => {
-            tile.style.backgroundImage = `url('${firstMedia.src}')`;
+            // FIX: Use !important to override any base background styles
+            tile.style.setProperty('background-image', `url("${firstMedia.src}")`, 'important');
             tile.classList.add('has-image');
           };
         } else if (firstMedia.type === 'video') {
@@ -546,6 +564,7 @@
           videoBg.loop = true;
           videoBg.autoplay = true;
           videoBg.playsInline = true;
+          // FIX: Ensure the video sits at z-index 0 behind the gradient overlay
           videoBg.style.cssText = "position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;";
           tile.appendChild(videoBg);
         }
