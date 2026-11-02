@@ -159,7 +159,7 @@
     }
     .tile:hover { border-color: var(--cyan); transform: translateY(-3px); }
     
-    /* FIX: Ensure the gradient shade sits behind the text but above the image */
+    /* Ensure the gradient shade sits behind the text but above the image */
     .tile:before { 
       content: ""; 
       position: absolute; 
@@ -183,7 +183,7 @@
       font-weight: 800;
       letter-spacing: -.08em;
       color: #8bdfff55;
-      z-index: 2; /* Increased to sit above the image */
+      z-index: 2;
     }
     .hint { 
       position: absolute; 
@@ -193,7 +193,7 @@
       font: 9px 'DM Mono'; 
       letter-spacing: .1em; 
       text-transform: uppercase; 
-      z-index: 2; /* Increased to sit above the image */
+      z-index: 2;
     }
     
     .info {
@@ -204,7 +204,7 @@
       opacity: 0;
       transform: translateY(6px);
       transition: .2s;
-      z-index: 3; /* Above the gradient shade */
+      z-index: 3;
     }
     .tile:hover .info, .tile:focus-visible .info { opacity: 1; transform: none; }
     .info b { display: block; font-size: 13px; }
@@ -493,7 +493,7 @@
         { type: 'image', src: "Media/Portfolio/3D Art/Golgomight's Engine/golgomight_engine2.png" },
         { type: 'image', src: "Media/Portfolio/3D Art/Golgomight's Engine/golgomight_engine3.png" },
         { type: 'image', src: "Media/Portfolio/3D Art/Golgomight's Engine/golgomight_engine4.png" }
-      ];
+      ], // <-- ADDED THIS COMMA
 
       'Noted': [
         { type: 'image', src: "Media/Projects/Noted/Engine/lost_main-menu.png" },
@@ -558,7 +558,7 @@
           let img = new Image();
           img.src = firstMedia.src;
           img.onload = () => {
-            // FIX: Use !important to override any base background styles
+            // Use !important to override any base background styles
             tile.style.setProperty('background-image', `url("${firstMedia.src}")`, 'important');
             tile.classList.add('has-image');
           };
@@ -570,7 +570,7 @@
           videoBg.loop = true;
           videoBg.autoplay = true;
           videoBg.playsInline = true;
-          // FIX: Ensure the video sits at z-index 0 behind the gradient overlay
+          // Ensure the video sits at z-index 0 behind the gradient overlay
           videoBg.style.cssText = "position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;";
           tile.appendChild(videoBg);
         }
