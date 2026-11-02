@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080e18">
+  <title>BlueCheese | Unity Developer</title>
+  
+  <style>
+    /* Import Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+    /* Variables & Reset */
+    :root {
+      --bg: #080e18;
+      --line: #203249;
+      --text: #edf7ff;
+      --muted: #91a5bc;
+      --cyan: #59dcff;
+      --blue: #4387ff;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 50% -20%, #163b5c 0, transparent 55%), var(--bg);
+      color: var(--text);
+      font-family: Manrope, Arial, sans-serif;
+      min-height: 100vh;
+    }
+    
+    /* Layout & Typography */
+    .wrap { width: min(1080px, calc(100% - 40px)); margin: auto; }
+    .top {
+      height: 76px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { font-weight: 800; font-size: 19px; letter-spacing: -1px; text-decoration: none; color: var(--text); }
+    .logo span { color: var(--cyan); }
+    
+    .top small, .eyebrow, .skills, .back, .footer {
+      font-family: 'DM Mono', monospace;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .top small { font-size: 10px; color: #7890aa; }
+    
+    /* Page Sections */
+    .page {
+      display: none;
+      min-height: calc(100vh - 130px);
+      padding: 50px 0 90px;
+    }
+    .page.active {
+      display: block;
+      animation: fade .3s ease;
+    }
+    .hero {
+      min-height: calc(100vh - 76px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    .eyebrow { font-size: 11px; color: var(--cyan); }
+    
+    /* Hero Name Gradient */
+    h1 {
+      font-size: clamp(64px, 12vw, 138px);
+      line-height: 1;
+      margin: 22px 0;
+      letter-spacing: -.085em;
+      background: linear-gradient(100deg, #55dfff, #4387ff, #55dfff, #4387ff, #55dfff);
+      background-size: 250% auto;
+      color: transparent;
+      background-clip: text;
+      animation: gradient 8s ease infinite;
+    }
+    
+    .intro { font-size: clamp(16px, 2vw, 19px); line-height: 1.8; color: #b6c7d9; max-width: 650px; }
+    .skills { font-size: 10px; line-height: 2; color: #8199b4; margin-top: 18px; }
+    
+    /* Buttons */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 34px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 22px;
+      border: 1px solid #34516d;
+      border-radius: 6px;
+      background: #122238;
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .btn:hover { transform: translateY(-3px); border-color: var(--cyan); box-shadow: 0 8px 28px #1a8cc522; }
+    .btn.primary { background: linear-gradient(110deg, #117db5, #315ed1); border-color: transparent; }
+    .back { border: 0; background: none; color: #93abc4; padding: 8px 0 30px; cursor: pointer; font-size: 11px; }
+    .back:hover { color: var(--cyan); }
+    
+    /* Accordion & Tiles */
+    h2 { font-size: clamp(40px, 7vw, 68px); letter-spacing: -.07em; margin: 12px 0; }
+    .sub { color: var(--muted); font-size: 14px; line-height: 1.7; margin: 0 0 32px; }
+    
+    .accordion { border-top: 1px solid var(--line); }
+    .group { border-bottom: 1px solid var(--line); }
+    .toggle {
+      width: 100%;
+      padding: 23px 4px;
+      border: 0;
+      background: none;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .toggle span { color: var(--cyan); font: 20px 'DM Mono'; }
+    
+    .content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s; }
+    .group.open .content { grid-template-rows: 1fr; }
+    .inner { overflow: hidden; }
+    .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 0 0 26px; }
+    
+    /* Tile Buttons */
+    .tile {
+      position: relative;
+      aspect-ratio: 16/10;
+      border: 1px solid #263e57;
+      border-radius: 7px;
+      overflow: hidden;
+      background: radial-gradient(circle at 70% 25%, #1d5070, transparent 45%), linear-gradient(135deg, #152b43, #0b1420);
+      cursor: pointer;
+      text-align: left;
+      color: white;
+      transition: .2s;
+    }
+    .tile:hover { border-color: var(--cyan); transform: translateY(-3px); }
+    .tile:before { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 35%, #050a12eF); }
+    
+    .symbol {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -.08em;
+      color: #8bdfff55;
+    }
+    .hint { position: absolute; top: 13px; left: 13px; color: #7e9ab5; font: 9px 'DM Mono'; letter-spacing: .1em; text-transform: uppercase; }
+    
+    .info {
+      position: absolute;
+      bottom: 13px;
+      left: 14px;
+      right: 10px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: .2s;
+    }
+    .tile:hover .info, .tile:focus-visible .info { opacity: 1; transform: none; }
+    .info b { display: block; font-size: 13px; }
+    .info small { display: block; margin-top: 5px; color: #a8bed3; font: 10px 'DM Mono'; line-height: 1.5; }
+    
+    /* Contact Page */
+    .contactbox {
+      max-width: 700px;
+      padding: clamp(24px, 5vw, 46px);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: linear-gradient(130deg, #142941, #0c1725);
+    }
+    .contactbox p { color: #b2c4d8; line-height: 1.85; }
+    .gmail { background: #d94b3e; border-color: #d94b3e; }
+    .discord { background: #5865f2; border-color: #5865f2; }
+    
+    /* Modal / Overlay */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9;
+      background: #02060ddd;
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal.show { display: flex; }
+    .modalbox { width: min(900px, 100%); background: #0c1725; border: 1px solid #35516d; border-radius: 9px; overflow: hidden; }
+    .modalhead, .modalfoot { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .modalhead button { background: none; border: 0; color: white; font-size: 24px; cursor: pointer; }
+    .modalfoot { border: 0; color: #91a5bc; font: 10px 'DM Mono'; }
+    
+    /* Carousel */
+    .media {
+      aspect-ratio: 16/9;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #89a5c1;
+      background: linear-gradient(135deg, #142c46, #080e18);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .media img, .media video { width: 100%; height: 100%; object-fit: contain; border: 0; }
+    
+    .carousel { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 0; padding: 0; }
+    .carousel-stage { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; position: relative; padding: 20px; }
+    .carousel-slide { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; opacity: 1; transition: opacity .25s ease; }
+    .carousel-slide.fading { opacity: 0; }
+    
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      border: 1px solid #2a4058;
+      border-radius: 50%;
+      background: #0e1a2acc;
+      color: #cfe6f5;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 2;
+      transition: .2s;
+      backdrop-filter: blur(4px);
+    }
+    .carousel-arrow:hover { border-color: var(--cyan); color: var(--cyan); background: #0e1a2a; }
+    .carousel-arrow.prev { left: 12px; }
+    .carousel-arrow.next { right: 12px; }
+    .carousel-arrow:disabled { opacity: .25; cursor: default; }
+    
+    .carousel-counter {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font: 10px 'DM Mono';
+      color: #89a5c1;
+      letter-spacing: .1em;
+      background: #0e1a2acc;
+      padding: 4px 10px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+    .carousel-desc {
+      width: 100%;
+      padding: 16px 20px;
+      background: #0e1a2a;
+      border-top: 1px solid #2a4058;
+      text-align: left;
+      color: #b2c4d8;
+      font-size: 13px;
+      line-height: 1.7;
+      border-radius: 0 0 6px 6px;
+    }
+    .carousel-desc .desc-label { font: 10px 'DM Mono', monospace; color: #59dcff; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+    .carousel-desc .desc-text { min-height: 28px; color: #8ba6c1; font-style: italic; }
+    
+    /* Footer & Animations */
+    .footer { padding: 22px 0; border-top: 1px solid var(--line); display: flex; justify-content: space-between; color: #667e98; font-size: 9px; }
+    @keyframes gradient { 0% { background-position: 0% } 50% { background-position: 100% } 100% { background-position: 0% } }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
+    
+    /* Mobile & Accessibility */
+    @media(max-width: 700px) {
+      .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .info { opacity: 1; transform: none; bottom: 9px; left: 10px; }
+      .info b { font-size: 11px; }
+      .info small { font-size: 9px; }
+      .hint { font-size: 8px; left: 10px; top: 10px; }
+      .footer { flex-direction: column; gap: 8px; }
+    }
+    @media(prefers-reduced-motion: reduce) {
+      *, *:before, *:after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="top wrap">
+    <a class="logo" href="#" onclick="go('home'); return false;">BC<span>.</span></a>
+    <small>Unity game development / portfolio</small>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="wrap">
+    
+    <!-- HOME PAGE -->
+    <section id="home" class="page hero active">
+      <h1>BlueCheese</h1>
+      <p class="intro">I’m a game developer focused on creating interactive experiences in Unity. I enjoy bringing ideas to life through gameplay systems, visual design, and experimentation.</p>
+      <div class="skills">UNITY / C# / GAMEPLAY PROGRAMMING / 2D ART / 3D DESIGN</div>
+      <div class="actions">
+        <button class="btn primary" onclick="go('portfolio')">Portfolio ↗</button>
+        <button class="btn" onclick="go('projects')">Projects ↗</button>
+        <button class="btn" onclick="go('contact')">Contact Me ↗</button>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO PAGE -->
+    <section id="portfolio" class="page">
+      <button class="back" onclick="go('home')">← Back</button>
+      <div class="eyebrow">Selected work</div>
+      <h2>Portfolio</h2>
+      <p class="sub">Individual skills, experiments, and finished pieces.</p>
+      
+      <div class="accordion">
+        <!-- Category 1 -->
+        <div class="group open">
+          <button class="toggle" aria-expanded="true">Programming <span>＋</span></button>
+          <div class="content"><div class="inner"><div class="tiles">
+            <button class="tile" data-title="Gameplay Systems" data-meta="Creation date: Add date">
+              <span class="hint">Showcase</span><span class="symbol">C#</span>
+              <span class="info"><b>Gameplay Systems</b><small>Add creation date</small></span>
+            </button>
+            <button class="tile" data-title="Unity Mechanics" data-meta="Creation date: Add date">
+              <span class="hint">Showcase</span><span class="symbol">⌘</span>
+              <span class="info"><b>Unity Mechanics</b><small>Add creation date</small></span>
+            </button>
+            <button class="tile" data-title="Code Experiment" data-meta="Creation date: Add date">
+              <span class="hint">Showcase</span><span class="symbol">{ }</span>
+              <span class="info"><b>Code Experiment</b><small>Add creation date</small></span>
+            </button>
+          </div></div></div>
+        </div>
+
+        <!-- Category 2 -->
+        <div class="group">
+          <button class="toggle" aria-expanded="false">2D Art <span>＋</span></button>
+          <div class="content"><div class="inner"><div class="tiles">
+            <button class="tile" data-title="2D Artwork" data-meta="Creation date: Add date">
+              <span class="hint">Showcase</span><span class="symbol">✳</span>
+              <span class="info"><b>2D Artwork</b><small>Add creation date</small></span>
+            </button>
+            <button class="tile" data-title="Sprite / Animation" data-meta="Creation date: Add date">
+              <span class="hint">Showcase</span><span class="symbol">✦</span>
+              <span class="info"><b>Sprite / Animation</b><small>Add creation date</small></span>
+            </button>
+          </div></div></div>
+        </div>
+
+        <!-- Category 3 -->
+        <div class="group">
+          <button class="toggle" aria-expanded="false">3D Art <span>＋</span></button>
+          <div class="content"><div class="inner"><div class="tiles">
+            <button class="tile" data-title="Golgomight’s Engine" data-meta="Creation date: Oct 30th, 2026 | Description: 3D spacecraft engine model">
+              <span class="hint">Showcase</span><span class="symbol">◇</span>
+              <span class="info"><b>Golgomight’s Engine</b><small>Oct 30th, 2026 · 3D Model</small></span>
+            </button>
+            <button class="tile" data-title="Rigging / Animation" data-meta="Creation date: Add date">
+              <span class="hint">Showcase</span><span class="symbol">◈</span>
+              <span class="info"><b>Rigging / Animation</b><small>Add creation date</small></span>
+            </button>
+          </div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS PAGE -->
+    <section id="projects" class="page">
+      <button class="back" onclick="go('home')">← Back</button>
+      <div class="eyebrow">Projects</div>
+      <h2>Projects</h2>
+      <p class="sub">Games and collaborative projects developed in Unity.</p>
+      
+      <div class="accordion">
+        <div class="group open">
+          <button class="toggle" aria-expanded="true">In Active Development <span>＋</span></button>
+          <div class="content"><div class="inner"><div class="tiles">
+            <button class="tile" data-title="Trust No One" data-meta="Date joined: Add date · Role: Add role">
+              <span class="hint">Project</span><span class="symbol">T.N.O.</span>
+              <span class="info"><b>Trust No One</b><small>Date joined: Add date · Role: Add role</small></span>
+            </button>
+          </div></div></div>
+        </div>
+        <div class="group">
+          <button class="toggle" aria-expanded="false">Past Projects <span>＋</span></button>
+          <div class="content"><div class="inner"><div class="tiles">
+            <button class="tile" data-title="Past Unity Project" data-meta="Date joined: Add date · Role: Add role">
+              <span class="hint">Project</span><span class="symbol">＋</span>
+              <span class="info"><b>Past Unity Project</b><small>Date joined: Add date · Role: Add role</small></span>
+            </button>
+          </div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT PAGE -->
+    <section id="contact" class="page">
+      <button class="back" onclick="go('home')">← Back</button>
+      <div class="eyebrow">Contact</div>
+      <h2>Contact Me</h2>
+      <div class="contactbox">
+        <p>Have a project in mind, want to collaborate, or just want to talk game development? Feel free to reach out through either of the links below.</p>
+        <div class="actions">
+          <a class="btn gmail" href="mailto:YOUR_EMAIL@gmail.com">Email Me</a>
+          <a class="btn discord" href="https://discord.com/users/YOUR_DISCORD_ID" target="_blank" rel="noopener">Discord</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer wrap">
+    <span>© <span id="year"></span> BLUECHEESE</span>
+    <span>UNITY / C# / CREATIVE DEVELOPMENT</span>
+  </footer>
+
+  <!-- OVERLAY MODAL -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modalbox">
+      <div class="modalhead">
+        <strong id="modalTitle">Showcase</strong>
+        <button onclick="closeModal()" aria-label="Close">×</button>
+      </div>
+      <div class="media" id="media"></div>
+      <div class="modalfoot" id="modalMeta"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    // ==========================================
+    // 1. DATA CONFIGURATION (EASILY ADD MEDIA HERE)
+    // ==========================================
+    // To add new images/videos, simply match the exact Title from the HTML tile above.
+    // Add as many objects { type: 'image', src: 'path/to/file.jpg' } to the array as you want.
+
+    const showcaseData = {
+      'Golgomight’s Engine': [
+        { type: 'image', src: 'Media/Portfolio/3D Art/Golgomight’s Engine/1.png' },
+        { type: 'image', src: 'Media/Portfolio/3D Art/Golgomight’s Engine/2.png' },
+        { type: 'image', src: 'Media/Portfolio/3D Art/Golgomight’s Engine/3.png' },
+        { type: 'image', src: 'Media/Portfolio/3D Art/Golgomight’s Engine/4.png' }
+      ],
+      
+      // Example of a video:
+      // 'Trust No One': [
+      //   { type: 'video', src: 'media/gameplay.mp4' },
+      //   { type: 'image', src: 'media/screenshot1.jpg' }
+      // ]
+    };
+
+    // ==========================================
+    // 2. PAGE NAVIGATION & ACCORDION
+    // ==========================================
+    function go(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        let group = btn.closest('.group');
+        let isOpen = group.classList.toggle('open');
+        btn.setAttribute('aria-expanded', isOpen);
+        btn.querySelector('span').textContent = isOpen ? '－' : '＋';
+      });
+    });
+
+    // ==========================================
+    // 3. CAROUSEL & MODAL LOGIC
+    // ==========================================
+    const modal = document.getElementById('modal');
+    const modalMedia = document.getElementById('media');
+    const modalMeta = document.getElementById('modalMeta');
+    const modalTitle = document.getElementById('modalTitle');
+    
+    let currentIndex = 0;
+    let currentSet = [];
+
+    // Opens the modal and builds the HTML structure
+    function openModal(title, meta) {
+      modalTitle.textContent = title;
+      modalMeta.textContent = meta;
+      
+      // Look up the media for this title, or fallback to placeholder
+      currentSet = showcaseData[title] || [{ type: 'placeholder', label: 'Add media to the showcaseData object in the script.' }];
+      currentIndex = 0;
+
+      // Extract description if the data-meta attribute contains "Description: "
+      let descText = 'No description provided.';
+      if (meta.includes('Description: ')) {
+          descText = meta.split('Description: ')[1];
+      }
+
+      // Build carousel UI
+      modalMedia.innerHTML = `
+        <div class="carousel">
+          <div class="carousel-stage"></div>
+          <button class="carousel-arrow prev" aria-label="Previous">‹</button>
+          <button class="carousel-arrow next" aria-label="Next">›</button>
+          <div class="carousel-counter">1 / ${currentSet.length}</div>
+          <div class="carousel-desc">
+            <div class="desc-label">Description</div>
+            <div class="desc-text">${descText}</div>
+          </div>
+        </div>
+      `;
+
+      // Attach arrow events
+      modalMedia.querySelector('.carousel-arrow.prev').addEventListener('click', () => changeSlide(-1));
+      modalMedia.querySelector('.carousel-arrow.next').addEventListener('click', () => changeSlide(1));
+
+      // Render first slide
+      renderSlide(false);
+      
+      // Show modal
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    // Handles changing the index and triggering the fade animation
+    function changeSlide(direction) {
+      currentIndex = (currentIndex + direction + currentSet.length) % currentSet.length;
+      renderSlide(true);
+    }
+
+    // Injects the actual image/video into the stage
+    function renderSlide(animate) {
+      const stage = modalMedia.querySelector('.carousel-stage');
+      const counter = modalMedia.querySelector('.carousel-counter');
+      const prevBtn = modalMedia.querySelector('.carousel-arrow.prev');
+      const nextBtn = modalMedia.querySelector('.carousel-arrow.next');
+      const mediaItem = currentSet[currentIndex];
+
+      // Update counter & disable arrows if there's only 1 item
+      counter.textContent = `${currentIndex + 1} / ${currentSet.length}`;
+      prevBtn.disabled = currentSet.length <= 1;
+      nextBtn.disabled = currentSet.length <= 1;
+
+      // Function to actually swap the HTML
+      const apply = () => {
+        let content = '';
+        if (mediaItem.type === 'image') {
+          content = `<img src="${mediaItem.src}" alt="Showcase Media">`;
+        } else if (mediaItem.type === 'video') {
+          content = `<video src="${mediaItem.src}" controls playsinline></video>`;
+        } else {
+          content = `<div style="color:#5a7a96; font-style:italic;">${mediaItem.label || 'Media Placeholder'}</div>`;
+        }
+
+        stage.innerHTML = `<div class="carousel-slide">${content}</div>`;
+        
+        // Trigger fade-in
+        requestAnimationFrame(() => {
+          const slideEl = stage.querySelector('.carousel-slide');
+          if (slideEl) slideEl.classList.remove('fading');
+        });
+      };
+
+      // Trigger fade-out, then apply new content
+      if (animate) {
+        const slideEl = stage.querySelector('.carousel-slide');
+        if (slideEl) {
+          slideEl.classList.add('fading');
+          setTimeout(apply, 200); // Wait 200ms for fade-out to finish
+        } else {
+          apply();
+        }
+      } else {
+        apply();
+      }
+    }
+
+    // ==========================================
+    // 4. EVENT LISTENERS
+    // ==========================================
+    // Attach click events to all tiles
+    document.querySelectorAll('.tile').forEach(tile => {
+      tile.addEventListener('click', () => {
+        openModal(tile.dataset.title, tile.dataset.meta);
+      });
+    });
+
+    // Close modal when clicking outside or pressing Escape
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Set current year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
