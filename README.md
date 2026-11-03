@@ -5,8 +5,5 @@ Welcome to my version seven portfolio! This one is by far the most advanced, and
 
 ## Who am I
 
-
-
-Responsive Unity game-development portfolio (plain HTML/CSS/JavaScript).
-
-## Publish with GitHub Pages
+I'm a Unity game developer, who's looking for any opportunities, ideas, or chance to network or get more out there in the game dev community
+and gaming industry. I also act as a 3D artist! I have more experience in the 3D modeling enviroment and area, in Blender.
